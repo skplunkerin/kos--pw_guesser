@@ -1,0 +1,33 @@
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Compiled Binary files
+*.exe
+*.out
+*.test
+kos--pw_guesser*
+
+# Ignoring Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.swp
+*.swo
+.idea/
+.project
+*.iml
+.tmproj
+.nb-*
+.*.swp
+.DS_Store
+
+# Local testing
+testing/*
