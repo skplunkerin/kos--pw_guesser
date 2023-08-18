@@ -3,20 +3,17 @@ package pw_manager
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
-)
-
-var (
-	// TODO: make this dynamic. [skplunkerin]
-	filePath = "/Users/bunny/projects/project_kyzen/k.os/password_guesser"
 )
 
 // RemoveFirstLineFromFile copies the first non-empty line from the file,
 // removes it (and any blank lines above it) from the file, then returns the
 // line or err.
-func RemoveFirstLineFromFile(fromFileName string) (string, error) {
-	// TODO: make this dynamic. [skplunkerin]
-	fromFilePath := fmt.Sprintf("%s/%s", filePath, fromFileName)
+func RemoveFirstLineFromFile(fromFilePath string) (string, error) {
+	// Extract the file name from the path
+	fromFileName := filepath.Base(fromFilePath)
+
 	// Read the contents of file
 	file, err := os.Open(fromFilePath)
 	if err != nil {
@@ -73,28 +70,40 @@ func RemoveFirstLineFromFile(fromFileName string) (string, error) {
 	return firstLine, nil
 }
 
-// PrependLineToFile saves the line to the beginning of the file.
-func PrependLineToFile(line, toFileName string) error {
-	// TODO: make this dynamic. [skplunkerin]
-	toFilePath := fmt.Sprintf("%s/%s", filePath, toFileName)
-	file, err := os.OpenFile(toFilePath, os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Printf("Error opening file %s: %s", toFilePath, err.Error())
-		return err
+// AppendLineToFile saves the line to the end of the file.
+func AppendLineToFile(line, toFilePath string) error {
+	// create destination file if it doesn't exist, else open it
+	var (
+		file *os.File
+		err  error
+	)
+	_, err = os.Stat(toFilePath)
+	if os.IsNotExist(err) {
+		file, err = os.Create(toFilePath)
+		if err != nil {
+			fmt.Printf("Error creating file %s: %s", toFilePath, err.Error())
+			return err
+		}
+	} else {
+		file, err = os.OpenFile(toFilePath, os.O_APPEND|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Printf("Error opening file %s: %s", toFilePath, err.Error())
+			return err
+		}
 	}
 	defer file.Close()
-
 	// Prepend the line to file
 	if line == "" {
 		// fmt.Println("empty line found, skipping.")
 		return nil
 	}
-
 	_, err = file.WriteString(line + "\n")
 	if err != nil {
 		fmt.Printf("Error prepending to file %s: %s", toFilePath, err.Error())
 		return err
 	}
+	// Extract the file name from the path
+	// toFileName := filepath.Base(toFilePath)
 	// fmt.Printf("Line prepended to file %s:", toFileName)
 	return nil
 }
